@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surendra BG Removal</title>
+    <title>WorkConnect</title>
     <style>
         * {
             margin: 0;
@@ -13,517 +14,733 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(126, 34, 206, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(30, 60, 114, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-30px);
+            }
         }
 
         .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
             max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            margin: 20px auto;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in;
+            position: relative;
+            z-index: 1;
         }
 
-        header {
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page {
+            display: none;
+            padding: 40px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .header {
             text-align: center;
             margin-bottom: 40px;
         }
 
-        h1 {
-            font-size: 2.5em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .header h1 {
+            color: #1e3c72;
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72 0%, #7e22ce 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
         }
 
-        .subtitle {
+        .header p {
             color: #666;
             font-size: 1.1em;
         }
 
-        .upload-section {
-            background: linear-gradient(135deg, #e0e7ff 0%, #e9d5ff 100%);
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 60px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 40px;
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
         }
 
-        .upload-section:hover {
-            background: linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 100%);
-            transform: translateY(-2px);
-        }
-
-        .upload-section.dragover {
-            background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%);
-            border-color: #764ba2;
-        }
-
-        .upload-icon {
-            font-size: 4em;
+        .form-group {
             margin-bottom: 20px;
         }
 
-        .upload-text {
-            font-size: 1.2em;
-            color: #4c1d95;
-            margin-bottom: 20px;
-        }
-
-        .upload-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .upload-btn:hover {
-            transform: scale(1.05);
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .comparison-container {
-            display: none;
-            margin: 40px 0;
-            position: relative;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .comparison-slider {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .image-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-        }
-
-        .original-image, .processed-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #f3f4f6;
-        }
-
-        .processed-image {
-            clip-path: inset(0 50% 0 0);
-        }
-
-        .slider-handle {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 4px;
-            height: 100%;
-            background: white;
-            cursor: ew-resize;
-            z-index: 10;
-            transform: translateX(-50%);
-        }
-
-        .slider-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            color: #667eea;
-        }
-
-        .label {
-            position: absolute;
-            top: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
             font-weight: 600;
         }
 
-        .label-original {
-            left: 20px;
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
         }
 
-        .label-processed {
-            right: 20px;
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
-        .download-btn {
-            display: none;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        .btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #7e22ce 100%);
             color: white;
+            padding: 16px 30px;
             border: none;
-            padding: 15px 40px;
+            border-radius: 12px;
             font-size: 1.1em;
-            border-radius: 30px;
             cursor: pointer;
-            margin: 20px auto;
-            display: block;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(126, 34, 206, 0.3);
         }
 
-        .download-btn:hover {
-            transform: scale(1.05);
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(126, 34, 206, 0.4);
         }
 
-        .sample-section {
-            margin-top: 60px;
-        }
-
-        .sample-section h2 {
-            text-align: center;
-            color: #4c1d95;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-
-        .sample-grid {
+        .role-boxes {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
+            margin-top: 30px;
         }
 
-        .sample-card {
-            background: linear-gradient(135deg, #e0e7ff 0%, #e9d5ff 100%);
+        .role-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 30px;
             border-radius: 15px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .sample-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .sample-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .sample-card p {
-            padding: 15px;
             text-align: center;
-            color: #4c1d95;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: white;
+        }
+
+        .role-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .role-box h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .role-box p {
+            opacity: 0.9;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            color: white;
+        }
+
+        .category-card:hover {
+            transform: scale(1.05);
+        }
+
+        .category-card h3 {
+            font-size: 1.4em;
+        }
+
+        .workers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .worker-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .worker-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .worker-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .worker-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .worker-info {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .stars {
+            color: #ffa500;
+        }
+
+        .rating-text {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .skill-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .skill-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        .hire-btn {
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .hire-btn:hover {
+            background: #45a049;
+        }
+
+        .back-btn {
+            background: #757575;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
             font-weight: 600;
         }
 
-        .loading {
-            display: none;
+        .back-btn:hover {
+            background: #616161;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
             text-align: center;
-            padding: 40px;
         }
 
-        .spinner {
-            border: 4px solid #e0e7ff;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        .success-message h3 {
+            margin-bottom: 8px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .success-message p {
+            margin: 0;
         }
 
-        .error {
-            display: none;
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
+        textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
         @media (max-width: 768px) {
-            .container {
+            .page {
                 padding: 20px;
             }
 
-            h1 {
+            .header h1 {
                 font-size: 2em;
             }
 
-            .image-container {
-                height: 300px;
+            .role-box {
+                padding: 40px 20px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <header>
-            <h1>✨ Surendra BG Removal ✨</h1>
-            <p class="subtitle">Remove backgrounds from images instantly with AI</p>
-        </header>
-
-        <div class="upload-section" id="uploadSection">
-            <div class="upload-icon">📸</div>
-            <p class="upload-text">Drag & Drop your image here or click to upload</p>
-            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                Choose Image
-            </button>
-            <input type="file" id="fileInput" accept="image/jpeg,image/png">
+        <!-- Login Page -->
+        <div id="loginPage" class="page active">
+            <div class="header">
+                <h1>WorkConnect</h1>
+                <p>Connecting Businesses with Skilled Labor</p>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Enter your password">
+                </div>
+                <button class="btn" onclick="login()">Login</button>
+            </div>
         </div>
 
-        <div class="error" id="errorMsg"></div>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Removing background... Please wait</p>
-        </div>
-
-        <div class="comparison-container" id="comparisonContainer">
-            <div class="comparison-slider" id="comparisonSlider">
-                <div class="image-container">
-                    <img class="original-image" id="originalImage" alt="Original">
-                    <img class="processed-image" id="processedImage" alt="Background Removed">
-                    <div class="slider-handle" id="sliderHandle">
-                        <div class="slider-button">⇔</div>
-                    </div>
-                    <div class="label label-original">Original</div>
-                    <div class="label label-processed">No Background</div>
+        <!-- Dashboard -->
+        <div id="dashboardPage" class="page">
+            <div class="header">
+                <h1>Welcome to WorkConnect</h1>
+                <p>Choose your path</p>
+            </div>
+            <div class="role-boxes">
+                <div class="role-box" onclick="showPage('categoriesPage')">
+                    <h2>Business Takers</h2>
+                    <p>Find skilled workers for your projects</p>
+                </div>
+                <div class="role-box" onclick="showPage('labourFormPage')">
+                    <h2>Labours</h2>
+                    <p>Register and showcase your skills</p>
                 </div>
             </div>
-            <button class="download-btn" id="downloadBtn">Download Image</button>
         </div>
 
-        <div class="sample-section">
-            <h2>Try Sample Images</h2>
-            <div class="sample-grid">
-                <div class="sample-card" onclick="loadSample(1)">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="Sample 1">
-                    <p>Sneaker Product</p>
+        <!-- Categories Page -->
+        <div id="categoriesPage" class="page">
+            <button class="back-btn" onclick="showPage('dashboardPage')">← Back</button>
+            <div class="header">
+                <h1>Find Workers</h1>
+                <p>Enter your location to see available workers</p>
+            </div>
+            <div style="max-width: 500px; margin: 0 auto 40px;">
+                <div class="form-group">
+                    <label>Your Location *</label>
+                    <input type="text" id="businessLocation" placeholder="Enter city or area">
                 </div>
-                <div class="sample-card" onclick="loadSample(2)">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" alt="Sample 2">
-                    <p>Headphones</p>
+                <button class="btn" onclick="setLocationAndShowCategories()">Continue</button>
+            </div>
+            <div id="categoriesSection" style="display: none;">
+                <div class="header">
+                    <h1>Work Categories</h1>
+                    <p>Select a category to find workers</p>
                 </div>
-                <div class="sample-card" onclick="loadSample(3)">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" alt="Sample 3">
-                    <p>Watch Product</p>
+                <div class="categories">
+                    <div class="category-card" onclick="showWorkers('Masonry')">
+                        <h3>🧱 Masonry</h3>
+                    </div>
+                    <div class="category-card" onclick="showWorkers('Carpentry')">
+                        <h3>🪵 Carpentry</h3>
+                    </div>
+                    <div class="category-card" onclick="showWorkers('Painting')">
+                        <h3>🎨 Painting</h3>
+                    </div>
+                    <div class="category-card" onclick="showWorkers('Construction')">
+                        <h3>🏗️ Construction</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workers Page -->
+        <div id="workersPage" class="page">
+            <button class="back-btn" onclick="showPage('categoriesPage')">← Back to Categories</button>
+            <div class="header">
+                <h1 id="categoryTitle">Available Workers</h1>
+                <p>Browse and hire skilled professionals</p>
+            </div>
+            <div class="workers-grid" id="workersGrid"></div>
+        </div>
+
+        <!-- Labour Form Page -->
+        <div id="labourFormPage" class="page">
+            <button class="back-btn" onclick="showPage('dashboardPage')">← Back</button>
+            <div class="header">
+                <h1>Worker Registration</h1>
+                <p>Share your skills and get hired</p>
+            </div>
+            <form id="labourForm" onsubmit="submitLabourForm(event)">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="workerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Number *</label>
+                    <input type="tel" id="workerContact" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="workerEmail">
+                </div>
+                <div class="form-group">
+                    <label>Primary Skill *</label>
+                    <select id="workerSkill" required>
+                        <option value="">Select skill</option>
+                        <option value="Masonry">Masonry</option>
+                        <option value="Carpentry">Carpentry</option>
+                        <option value="Painting">Painting</option>
+                        <option value="Construction">Construction Services</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Years of Experience *</label>
+                    <input type="number" id="workerExperience" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Location *</label>
+                    <input type="text" id="workerLocation" required>
+                </div>
+                <div class="form-group">
+                    <label>Additional Skills (comma separated)</label>
+                    <textarea id="additionalSkills" placeholder="e.g., Plumbing, Electrical work"></textarea>
+                </div>
+                <button type="submit" class="btn">Create Profile</button>
+            </form>
+        </div>
+
+        <!-- Profile Success Page -->
+        <div id="profileSuccessPage" class="page">
+            <button class="back-btn" onclick="showPage('dashboardPage')">← Back to Dashboard</button>
+            <div class="header">
+                <h1>Your Profile</h1>
+                <p>This is how businesses will see you</p>
+            </div>
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div
+                    style="background: linear-gradient(135deg, #1e3c72 0%, #7e22ce 100%); padding: 60px 30px; border-radius: 16px 16px 0 0; text-align: center; color: white; position: relative;">
+                    <div
+                        style="width: 120px; height: 120px; border-radius: 50%; background: white; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 3em; font-weight: bold; color: #1e3c72; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
+                        <span id="profileInitial"></span>
+                    </div>
+                    <h2 style="font-size: 2em; margin-bottom: 5px; color: white;">
+                        <span id="profileName"></span>
+                    </h2>
+                    <p style="opacity: 0.9; font-size: 1.1em; color: white;">
+                        <span id="profileSkill"></span>
+                    </p>
+                </div>
+                <div
+                    style="background: white; padding: 30px; border-radius: 0 0 16px 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="color: #1e3c72; margin-bottom: 15px; font-size: 1.3em;">Contact Information</h3>
+                        <div style="display: grid; gap: 12px;">
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                                <span style="font-size: 1.2em;">📞</span>
+                                <span id="profileContact" style="color: #333;"></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #f5f5f5; border-radius: 8px;"
+                                id="profileEmailDiv">
+                                <span style="font-size: 1.2em;">✉️</span>
+                                <span id="profileEmail" style="color: #333;"></span>
+                            </div>
+                            <div
+                                style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+                                <span style="font-size: 1.2em;">📍</span>
+                                <span id="profileLocation" style="color: #333;"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="color: #1e3c72; margin-bottom: 15px; font-size: 1.3em;">Experience</h3>
+                        <div
+                            style="padding: 12px; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.2em;">⏱️</span>
+                            <span id="profileExperience" style="color: #333;"></span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 25px;">
+                        <h3 style="color: #1e3c72; margin-bottom: 15px; font-size: 1.3em;">Skills</h3>
+                        <div id="profileSkills" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                    </div>
+                    <div class="success-message">
+                        <h3>🎉 Profile Created Successfully!</h3>
+                        <p>Your professional profile is now live and visible to businesses looking for skilled workers.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Remove.bg API key
-        const apiKey = 'ZbfBwVAHrV6AyL7niMZtqAER';
+        const sampleWorkers = {
+            'Masonry': [
+                { name: 'Rajesh Kumar', experience: '8 years', location: 'Mumbai', skills: ['Brick laying', 'Stone work'], rating: 4.5 },
+                { name: 'Amit Patel', experience: '5 years', location: 'Ahmedabad', skills: ['Plastering', 'Tiling'], rating: 4.8 },
+                { name: 'Suresh Reddy', experience: '12 years', location: 'Hyderabad', skills: ['Foundation', 'Brick work'], rating: 4.7 },
+                { name: 'Arun Kumar', experience: '6 years', location: 'Mumbai', skills: ['Concrete work', 'Plastering'], rating: 4.3 },
+                { name: 'Vinod Singh', experience: '10 years', location: 'Delhi', skills: ['Masonry', 'Tiling'], rating: 4.6 }
+            ],
+            'Carpentry': [
+                { name: 'Mohan Singh', experience: '10 years', location: 'Delhi', skills: ['Furniture', 'Doors'], rating: 4.9 },
+                { name: 'Rahul Sharma', experience: '6 years', location: 'Jaipur', skills: ['Woodwork', 'Cabinets'], rating: 4.4 },
+                { name: 'Vijay Kumar', experience: '15 years', location: 'Bangalore', skills: ['Custom furniture', 'Repair'], rating: 4.8 },
+                { name: 'Sanjay Mehta', experience: '7 years', location: 'Mumbai', skills: ['Interior carpentry', 'Furniture'], rating: 4.5 },
+                { name: 'Ravi Verma', experience: '9 years', location: 'Pune', skills: ['Woodwork', 'Doors'], rating: 4.6 }
+            ],
+            'Painting': [
+                { name: 'Prakash Jain', experience: '7 years', location: 'Pune', skills: ['Interior', 'Exterior'], rating: 4.7 },
+                { name: 'Deepak Verma', experience: '4 years', location: 'Indore', skills: ['Texture', 'Polish'], rating: 4.2 },
+                { name: 'Anil Gupta', experience: '9 years', location: 'Chennai', skills: ['Spray painting', 'Waterproofing'], rating: 4.6 },
+                { name: 'Manoj Kumar', experience: '5 years', location: 'Delhi', skills: ['Interior painting', 'Texture'], rating: 4.4 },
+                { name: 'Sunil Rao', experience: '11 years', location: 'Bangalore', skills: ['Exterior', 'Decorative'], rating: 4.8 }
+            ],
+            'Construction': [
+                { name: 'Ramesh Yadav', experience: '20 years', location: 'Kolkata', skills: ['Site management', 'Labor coordination'], rating: 4.9 },
+                { name: 'Krishna Das', experience: '13 years', location: 'Lucknow', skills: ['Building construction', 'Renovation'], rating: 4.5 },
+                { name: 'Ganesh Naik', experience: '11 years', location: 'Nagpur', skills: ['Structural work', 'RCC'], rating: 4.7 },
+                { name: 'Ashok Reddy', experience: '16 years', location: 'Hyderabad', skills: ['Project management', 'Construction'], rating: 4.8 },
+                { name: 'Kishore Patel', experience: '14 years', location: 'Mumbai', skills: ['Building', 'Renovation'], rating: 4.6 }
+            ]
+        };
 
-        const uploadSection = document.getElementById('uploadSection');
-        const fileInput = document.getElementById('fileInput');
-        const comparisonContainer = document.getElementById('comparisonContainer');
-        const loading = document.getElementById('loading');
-        const errorMsg = document.getElementById('errorMsg');
-        const originalImage = document.getElementById('originalImage');
-        const processedImage = document.getElementById('processedImage');
-        const sliderHandle = document.getElementById('sliderHandle');
-        const comparisonSlider = document.getElementById('comparisonSlider');
-        const downloadBtn = document.getElementById('downloadBtn');
+        let userProfiles = [];
+        let businessUserLocation = '';
 
-        let processedImageData = null;
-
-        // Drag and drop functionality
-        uploadSection.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadSection.classList.add('dragover');
-        });
-
-        uploadSection.addEventListener('dragleave', () => {
-            uploadSection.classList.remove('dragover');
-        });
-
-        uploadSection.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
-                processImage(file);
-            } else {
-                showError('Please upload a JPEG or PNG image');
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                processImage(file);
-            }
-        });
-
-        async function processImage(file) {
-            if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
-                showError('Please add your Remove.bg API key in the script. Get one free at remove.bg');
+        function setLocationAndShowCategories() {
+            const location = document.getElementById('businessLocation').value.trim();
+            if (!location) {
+                alert('Please enter your location');
                 return;
             }
+            businessUserLocation = location;
+            document.getElementById('categoriesSection').style.display = 'block';
+            document.getElementById('businessLocation').parentElement.parentElement.style.display = 'none';
+        }
 
-            hideError();
-            loading.style.display = 'block';
-            comparisonContainer.style.display = 'none';
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                originalImage.src = e.target.result;
+        function login() {
+            showPage('dashboardPage');
+        }
+
+        function showWorkers(category) {
+            document.getElementById('categoryTitle').textContent = category + ' Professionals in ' + businessUserLocation;
+            const grid = document.getElementById('workersGrid');
+            grid.innerHTML = '';
+
+            const workers = sampleWorkers[category] || [];
+
+            // Filter workers by location match
+            const filteredWorkers = workers.filter(worker =>
+                worker.location.toLowerCase().includes(businessUserLocation.toLowerCase()) ||
+                businessUserLocation.toLowerCase().includes(worker.location.toLowerCase())
+            );
+
+            // If no workers in exact location, show nearby workers
+            const workersToShow = filteredWorkers.length > 0 ? filteredWorkers : workers;
+
+            if (filteredWorkers.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 20px;">No workers found in your exact location. Showing workers from nearby areas:</p>';
+            }
+
+            workersToShow.forEach(worker => {
+                grid.innerHTML += createWorkerCard(worker);
+            });
+
+            showPage('workersPage');
+        }
+
+        function createWorkerCard(worker) {
+            const initial = worker.name.charAt(0);
+            const skillBadges = worker.skills.map(s => `<span class="skill-badge">${s}</span>`).join('');
+            const fullStars = Math.floor(worker.rating);
+            const hasHalfStar = worker.rating % 1 !== 0;
+            const emptyStars = 5 - Math.ceil(worker.rating);
+
+            let starsHtml = '★'.repeat(fullStars);
+            if (hasHalfStar) starsHtml += '⯨';
+            starsHtml += '☆'.repeat(emptyStars);
+
+            return `
+                <div class="worker-card">
+                    <div class="worker-photo">${initial}</div>
+                    <div class="worker-name">${worker.name}</div>
+                    <div class="rating">
+                        <span class="stars">${starsHtml}</span>
+                        <span class="rating-text">(${worker.rating})</span>
+                    </div>
+                    <div class="worker-info">📍 ${worker.location}</div>
+                    <div class="worker-info">⏱️ ${worker.experience} experience</div>
+                    <div class="skill-badges">${skillBadges}</div>
+                    <button class="hire-btn" onclick="hireWorker('${worker.name}')">Hire Now</button>
+                </div>
+            `;
+        }
+
+        function hireWorker(name) {
+            alert(`Contact request sent to ${name}! They will reach out to you soon.`);
+        }
+
+        function submitLabourForm(e) {
+            e.preventDefault();
+
+            const profile = {
+                name: document.getElementById('workerName').value,
+                contact: document.getElementById('workerContact').value,
+                email: document.getElementById('workerEmail').value,
+                skill: document.getElementById('workerSkill').value,
+                experience: document.getElementById('workerExperience').value,
+                location: document.getElementById('workerLocation').value,
+                additionalSkills: document.getElementById('additionalSkills').value.split(',').map(s => s.trim()).filter(s => s)
             };
-            reader.readAsDataURL(file);
 
-            const formData = new FormData();
-            formData.append('image_file', file);
-            formData.append('size', 'auto');
+            // Get the initial
+            const initial = profile.name.charAt(0).toUpperCase();
+            const allSkills = [profile.skill, ...profile.additionalSkills].filter(s => s);
 
-            try {
-                const response = await fetch('https://api.remove.bg/v1.0/removebg', {
-                    method: 'POST',
-                    headers: {
-                        'X-Api-Key': apiKey
-                    },
-                    body: formData
-                });
+            // Populate the profile card elements
+            document.getElementById('profileInitial').textContent = initial;
+            document.getElementById('profileName').textContent = profile.name;
+            document.getElementById('profileSkill').textContent = profile.skill;
+            document.getElementById('profileContact').textContent = profile.contact;
+            document.getElementById('profileLocation').textContent = profile.location;
+            document.getElementById('profileExperience').textContent = profile.experience + ' years of experience';
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-                }
-
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
-                processedImage.src = url;
-                processedImageData = blob;
-
-                loading.style.display = 'none';
-                comparisonContainer.style.display = 'block';
-                downloadBtn.style.display = 'block';
-            } catch (error) {
-                loading.style.display = 'none';
-                showError('Failed to remove background. Please check your API key and try again.');
-                console.error('Error:', error);
+            // Handle email visibility
+            const emailDiv = document.getElementById('profileEmailDiv');
+            if (profile.email) {
+                document.getElementById('profileEmail').textContent = profile.email;
+                emailDiv.style.display = 'flex';
+            } else {
+                emailDiv.style.display = 'none';
             }
-        }
 
-        // Slider functionality
-        let isDragging = false;
+            // Add skills badges
+            const skillsContainer = document.getElementById('profileSkills');
+            skillsContainer.innerHTML = '';
+            allSkills.forEach(skill => {
+                const badge = document.createElement('span');
+                badge.className = 'skill-badge';
+                badge.style.fontSize = '1em';
+                badge.style.padding = '8px 16px';
+                badge.textContent = skill;
+                skillsContainer.appendChild(badge);
+            });
 
-        sliderHandle.addEventListener('mousedown', () => {
-            isDragging = true;
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            updateSlider(e);
-        });
-
-        comparisonSlider.addEventListener('click', (e) => {
-            updateSlider(e);
-        });
-
-        // Touch support
-        sliderHandle.addEventListener('touchstart', () => {
-            isDragging = true;
-        });
-
-        document.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            updateSlider(e.touches[0]);
-        });
-
-        function updateSlider(e) {
-            const rect = comparisonSlider.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            x = Math.max(0, Math.min(x, rect.width));
-            const percentage = (x / rect.width) * 100;
-
-            sliderHandle.style.left = percentage + '%';
-            processedImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-        }
-
-        // Download functionality
-        downloadBtn.addEventListener('click', () => {
-            if (processedImageData) {
-                const url = URL.createObjectURL(processedImageData);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'background-removed.png';
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-        });
-
-        // Sample images
-        async function loadSample(num) {
-            const sampleUrls = [
-                'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
-                'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
-                'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800'
-            ];
-
-            const url = sampleUrls[num - 1];
-            
-            try {
-                const response = await fetch(url);
-                const blob = await response.blob();
-                const file = new File([blob], 'sample.jpg', { type: 'image/jpeg' });
-                processImage(file);
-            } catch (error) {
-                showError('Failed to load sample image');
-                console.error('Error:', error);
-            }
-        }
-
-        function showError(message) {
-            errorMsg.textContent = message;
-            errorMsg.style.display = 'block';
-        }
-
-        function hideError() {
-            errorMsg.style.display = 'none';
+            // Reset form and show profile page
+            document.getElementById('labourForm').reset();
+            showPage('profileSuccessPage');
         }
     </script>
 </body>
+
 </html>
